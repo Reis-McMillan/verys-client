@@ -56,13 +56,13 @@ jobs:
           cmd: >
             yq -i
             '.spec.template.metadata.annotations."kubectl.kubernetes.io/restartedAt" = now'
-            deploy/base/verys-client/deployment.yaml
+            deploy/base/verys/verys-frontend-deployment.yaml
 
       - name: Commit and push
         run: |
           cd deploy
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add base/verys-client/deployment.yaml
-          git commit -m "redeploy verys-client (${{ github.sha }})"
+          git add base/verys/verys-frontend-deployment.yaml
+          git commit -m "redeploy verys frontend (${{ github.sha }})"
           git push
