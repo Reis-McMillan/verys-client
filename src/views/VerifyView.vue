@@ -10,14 +10,19 @@ const code = ref('')
 const error = ref('')
 const loading = ref(false)
 const email = route.query.email || ''
+const oauth2Session = route.query.oauth2_session || ''
 
 async function handleSubmit() {
   error.value = ''
   loading.value = true
   try {
-    const res = await verifyCode(email, code.value)
+    const res = await verifyCode(email, code.value, oauth2Session)
     if (res.ok) {
-      await startOAuthFlow()
+      if (oauth2Session && res.redirected) {
+        window.location.href = res.url
+      } else {
+        await startOAuthFlow()
+      }
     } else {
       const data = await res.json().catch(() => ({}))
       error.value = data.detail || 'Invalid or expired code.'

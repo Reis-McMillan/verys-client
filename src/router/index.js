@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '../composables/useAuth.js'
 
 import LoginView from '../views/LoginView.vue'
+import RegistrationView from '../views/RegistrationView.vue'
 import VerifyView from '../views/VerifyView.vue'
 import CallbackView from '../views/CallbackView.vue'
 import DashboardView from '../views/DashboardView.vue'
@@ -14,6 +15,7 @@ import ScopesView from '../views/admin/ScopesView.vue'
 const routes = [
   { path: '/', redirect: '/dashboard' },
   { path: '/login', name: 'Login', component: LoginView, meta: { guest: true } },
+  { path: '/register', name: 'Register', component: RegistrationView, meta: { guest: true } },
   { path: '/verify', name: 'Verify', component: VerifyView, meta: { guest: true } },
   { path: '/callback', name: 'Callback', component: CallbackView },
   { path: '/dashboard', name: 'Dashboard', component: DashboardView, meta: { auth: true } },

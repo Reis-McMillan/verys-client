@@ -92,7 +92,7 @@ async function handleLogout() {
 
     <div class="mt-auto border-t border-slate-800 p-4">
       <template v-if="isAuthenticated">
-        <div v-if="!isCollapsed" class="text-slate-400 text-sm truncate mb-3">{{ user?.email || user?.sub }}</div>
+        <div v-if="!isCollapsed" class="text-slate-400 text-sm truncate mb-3">{{ user?.email }}</div>
         <button
           @click="handleLogout"
           class="flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm font-medium hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
@@ -112,6 +112,15 @@ async function handleLogout() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           <span v-if="!isCollapsed">Sign In</span>
+        </router-link>
+        <router-link
+          to="/register"
+          class="flex items-center justify-center gap-3 mt-2 border border-slate-700 hover:border-slate-600 hover:text-white text-sm font-medium px-3 py-2 rounded-md transition-colors"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm11-4v6m3-3h-6" />
+          </svg>
+          <span v-if="!isCollapsed">Sign Up</span>
         </router-link>
       </template>
     </div>

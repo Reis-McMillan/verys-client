@@ -13,10 +13,12 @@ const createError = ref('')
 const form = ref({
   provider_id: '',
   display_name: '',
+  discovery_url: '',
   client_id: '',
   client_secret: '',
   authorization_endpoint: '',
   token_endpoint: '',
+  scopes: '',
 })
 
 const showDetail = ref(null)
@@ -47,10 +49,12 @@ function resetForm() {
   return {
     provider_id: '',
     display_name: '',
+    discovery_url: '',
     client_id: '',
     client_secret: '',
     authorization_endpoint: '',
     token_endpoint: '',
+    scopes: '',
   }
 }
 
@@ -58,7 +62,11 @@ async function createProvider() {
   createError.value = ''
   createLoading.value = true
   try {
-    const res = await api.post('/providers/', form.value)
+    const body = {
+      ...form.value,
+      scopes: form.value.scopes ? form.value.scopes.split(/[\s,]+/).filter(Boolean) : [],
+    }
+    const res = await api.post('/providers/', body)
     if (res.ok) {
       form.value = resetForm()
       showCreate.value = false
@@ -86,6 +94,7 @@ async function viewDetail(providerId) {
         client_secret: '',
         authorization_endpoint: detailProvider.value.authorization_endpoint || '',
         token_endpoint: detailProvider.value.token_endpoint || '',
+        scopes: (detailProvider.value.scopes || []).join(' '),
         enabled: detailProvider.value.enabled ?? true,
       }
     }
@@ -103,6 +112,7 @@ async function updateProvider(providerId) {
       client_secret: editForm.value.client_secret || null,
       authorization_endpoint: editForm.value.authorization_endpoint || null,
       token_endpoint: editForm.value.token_endpoint || null,
+      scopes: editForm.value.scopes ? editForm.value.scopes.split(/[\s,]+/).filter(Boolean) : [],
       enabled: editForm.value.enabled,
     }
     const res = await api.put(`/providers/${encodeURIComponent(providerId)}`, body)
@@ -158,6 +168,11 @@ async function deleteProvider(providerId) {
                 class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
             </div>
           </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Discovery URL</label>
+            <input v-model="form.discovery_url" placeholder="https://accounts.google.com/.well-known/openid-configuration"
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-300 mb-1">Client ID</label>
@@ -178,6 +193,11 @@ async function deleteProvider(providerId) {
           <div>
             <label class="block text-sm font-medium text-gray-300 mb-1">Token Endpoint</label>
             <input v-model="form.token_endpoint" required placeholder="https://oauth2.googleapis.com/token"
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Scopes (space-separated)</label>
+            <input v-model="form.scopes" placeholder="openid email profile"
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
           </div>
           <div class="flex gap-3">
@@ -226,6 +246,11 @@ async function deleteProvider(providerId) {
           <div>
             <label class="block text-sm font-medium text-gray-300 mb-1">Token Endpoint</label>
             <input v-model="editForm.token_endpoint"
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Scopes (space-separated)</label>
+            <input v-model="editForm.scopes"
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
           </div>
           <div class="flex items-center gap-2">

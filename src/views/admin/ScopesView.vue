@@ -15,7 +15,6 @@ const form = ref({
   name: '',
   description: '',
   provider_id: '',
-  provider_scopes: '',
 })
 
 const showDetail = ref(null)
@@ -58,7 +57,7 @@ async function fetchProviders() {
 }
 
 function resetForm() {
-  return { name: '', description: '', provider_id: '', provider_scopes: '' }
+  return { name: '', description: '', provider_id: '' }
 }
 
 async function createScope() {
@@ -69,7 +68,6 @@ async function createScope() {
       name: form.value.name,
       description: form.value.description,
       provider_id: form.value.provider_id || null,
-      provider_scopes: form.value.provider_scopes ? form.value.provider_scopes.split(/[\s,]+/).filter(Boolean) : [],
     }
     const res = await api.post('/scopes/', body)
     if (res.ok) {
@@ -96,7 +94,6 @@ async function viewDetail(name) {
       editForm.value = {
         description: detailScope.value.description || '',
         provider_id: detailScope.value.provider_id || '',
-        provider_scopes: (detailScope.value.provider_scopes || []).join(' '),
       }
     }
   } catch {
@@ -110,7 +107,6 @@ async function updateScope(name) {
     const body = {
       description: editForm.value.description || null,
       provider_id: editForm.value.provider_id || null,
-      provider_scopes: editForm.value.provider_scopes ? editForm.value.provider_scopes.split(/[\s,]+/).filter(Boolean) : null,
     }
     const res = await api.put(`/scopes/${encodeURIComponent(name)}`, body)
     if (res.ok) {
@@ -180,11 +176,6 @@ async function deleteScope(name) {
             <input v-model="form.description" required placeholder="Read access to calendar events"
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
           </div>
-          <div v-if="form.provider_id">
-            <label class="block text-sm font-medium text-gray-300 mb-1">Provider Scopes (space-separated)</label>
-            <input v-model="form.provider_scopes" placeholder="https://www.googleapis.com/auth/calendar.readonly"
-              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
-          </div>
           <div class="flex gap-3">
             <button type="submit" :disabled="createLoading"
               class="py-2 px-6 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors cursor-pointer text-sm">
@@ -222,11 +213,6 @@ async function deleteScope(name) {
               </option>
             </select>
           </div>
-          <div v-if="editForm.provider_id">
-            <label class="block text-sm font-medium text-gray-300 mb-1">Provider Scopes (space-separated)</label>
-            <input v-model="editForm.provider_scopes"
-              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-          </div>
           <div class="flex gap-3">
             <button type="submit" :disabled="editLoading"
               class="py-2 px-6 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors cursor-pointer text-sm">
@@ -257,7 +243,6 @@ async function deleteScope(name) {
               <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
               <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
               <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Provider</th>
-              <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Provider Scopes</th>
               <th class="px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
@@ -269,18 +254,6 @@ async function deleteScope(name) {
               </td>
               <td class="px-6 py-4 text-sm text-gray-300">{{ scope.description }}</td>
               <td class="px-6 py-4 text-sm text-gray-400 font-mono">{{ scope.provider_id || '—' }}</td>
-              <td class="px-6 py-4">
-                <div class="flex gap-1.5 flex-wrap">
-                  <span
-                    v-for="ps in (scope.provider_scopes || [])"
-                    :key="ps"
-                    class="text-xs font-medium px-2.5 py-1 rounded-full border bg-gray-800 text-gray-300 border-gray-700"
-                  >
-                    {{ ps }}
-                  </span>
-                  <span v-if="!scope.provider_scopes?.length" class="text-gray-500 text-sm">—</span>
-                </div>
-              </td>
               <td class="px-6 py-4 text-right">
                 <button @click="viewDetail(scope.name)" class="text-xs text-indigo-400 hover:text-indigo-300 cursor-pointer">
                   View / Edit
@@ -288,7 +261,7 @@ async function deleteScope(name) {
               </td>
             </tr>
             <tr v-if="scopes.length === 0">
-              <td colspan="5" class="px-6 py-12 text-center text-gray-500">No scopes found.</td>
+              <td colspan="4" class="px-6 py-12 text-center text-gray-500">No scopes found.</td>
             </tr>
           </tbody>
         </table>

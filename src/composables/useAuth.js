@@ -39,9 +39,14 @@ export function useAuth() {
     return api.post(`/verification/?email=${encodeURIComponent(email)}`)
   }
 
-  async function verifyCode(email, code) {
-    const path = `/verification/?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`
-    return fetch(`${OAUTH2_CONFIG.verysBaseUrl}${path}`, { credentials: 'include' })
+  async function register(payload) {
+    return api.post('/register/', payload)
+  }
+
+  async function verifyCode(email, code, oauth2Session) {
+    const params = new URLSearchParams({ email, code })
+    if (oauth2Session) params.set('oauth2_session', oauth2Session)
+    return fetch(`${OAUTH2_CONFIG.verysBaseUrl}/verification/?${params}`, { credentials: 'include' })
   }
 
   async function startOAuthFlow() {
@@ -142,6 +147,7 @@ export function useAuth() {
     isAdmin,
     fetchUser,
     requestVerification,
+    register,
     verifyCode,
     startOAuthFlow,
     handleCallback,

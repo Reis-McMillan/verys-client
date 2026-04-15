@@ -66,6 +66,11 @@ async function handleSubmit() {
             {{ loading ? 'Sending...' : 'Send Verification Code' }}
           </button>
         </form>
+
+        <p class="text-center text-sm text-gray-400 mt-6">
+          Don't have an account?
+          <router-link to="/register" class="text-indigo-400 hover:text-indigo-300 font-medium">Sign up</router-link>
+        </p>
       </div>
     </div>
   </div>
