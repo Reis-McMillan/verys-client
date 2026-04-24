@@ -24,7 +24,7 @@ async function fetchAccounts() {
   loading.value = true
   try {
     const [linkedRes, providersRes] = await Promise.all([
-      api.get('/federation/providers'),
+      api.get('/federation/tokens'),
       api.get('/providers/'),
     ])
     if (linkedRes.ok) linkedAccounts.value = await linkedRes.json()
@@ -34,6 +34,12 @@ async function fetchAccounts() {
   } finally {
     loading.value = false
   }
+}
+
+async function unlinkAccount(tokenId, label) {
+  if (!confirm(`Unlink ${label}? You'll have to reconnect it to use features that need it.`)) return
+  const res = await api.delete(`/federation/${tokenId}`)
+  if (res.ok) await fetchAccounts()
 }
 
 function startFederation(providerId) {
@@ -104,13 +110,19 @@ onMounted(() => {
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div
           v-for="account in linkedAccounts"
-          :key="`${account.provider_id}-${account.subject}`"
-          class="bg-gray-900 border border-gray-800 rounded-xl p-6"
+          :key="account.token_id"
+          class="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col"
         >
           <div class="text-sm text-gray-400 mb-1">Provider</div>
           <div class="text-white font-medium mb-3">{{ providerDisplayNames[account.provider_id] || account.provider_id }}</div>
-          <div class="text-sm text-gray-400 mb-1">Subject</div>
-          <div class="text-gray-300 text-sm font-mono truncate">{{ account.subject || '—' }}</div>
+          <div class="text-sm text-gray-400 mb-1">Email</div>
+          <div class="text-gray-300 text-sm truncate mb-4">{{ account.email || '—' }}</div>
+          <button
+            @click="unlinkAccount(account.token_id, providerDisplayNames[account.provider_id] || account.provider_id)"
+            class="mt-auto py-2 px-4 bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium rounded-lg transition-colors cursor-pointer text-sm border border-red-600/30"
+          >
+            Unlink
+          </button>
         </div>
 
         <div v-if="enabledProviders.length > 0" class="relative">
