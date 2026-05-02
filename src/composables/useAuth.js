@@ -61,7 +61,6 @@ export function useAuth() {
       response_type: 'code',
       client_id: OAUTH2_CONFIG.clientId,
       redirect_uri: OAUTH2_CONFIG.redirectUri,
-      scope: OAUTH2_CONFIG.scope,
       code_challenge: challenge,
       code_challenge_method: 'S256',
       state: oauthState,

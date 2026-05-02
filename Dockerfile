@@ -7,9 +7,8 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_VERYS_BASE_URL=/api
+ARG VITE_VERYS_BASE_URL=https://api.verys.mcmlln.dev
 ARG VITE_OAUTH2_CLIENT_ID=verys-client
-ARG VITE_OAUTH2_SCOPE=openid
 
 RUN npm run build
 

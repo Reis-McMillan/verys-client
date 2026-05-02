@@ -15,6 +15,7 @@ const form = ref({
   client_name: '',
   redirect_uris: '',
   allowed_scopes: 'openid',
+  prm_uri: '',
   is_public: false,
   token_endpoint_auth_method: 'client_secret_basic',
 })
@@ -55,11 +56,12 @@ async function createClient() {
       is_public: form.value.is_public,
       token_endpoint_auth_method: form.value.token_endpoint_auth_method,
     }
+    if (form.value.prm_uri) body.prm_uri = form.value.prm_uri
     const res = await api.post('/clients/', body)
     if (res.ok) {
       const data = await res.json()
       createdSecret.value = data.client_secret || ''
-      form.value = { client_name: '', redirect_uris: '', allowed_scopes: 'openid', is_public: false, token_endpoint_auth_method: 'client_secret_basic' }
+      form.value = { client_name: '', redirect_uris: '', allowed_scopes: 'openid', prm_uri: '', is_public: false, token_endpoint_auth_method: 'client_secret_basic' }
       await fetchClients()
       if (!createdSecret.value) showCreate.value = false
     } else {
@@ -83,6 +85,7 @@ async function viewDetail(clientId) {
         client_name: detailClient.value.client_name || '',
         redirect_uris: (detailClient.value.redirect_uris || []).join('\n'),
         allowed_scopes: (detailClient.value.allowed_scopes || []).join(' '),
+        prm_uri: detailClient.value.prm_uri || '',
         is_public: detailClient.value.is_public || false,
       }
     }
@@ -98,6 +101,7 @@ async function updateClient(clientId) {
       client_name: editForm.value.client_name,
       redirect_uris: editForm.value.redirect_uris.split('\n').map((u) => u.trim()).filter(Boolean),
       allowed_scopes: editForm.value.allowed_scopes.split(/[\s,]+/).filter(Boolean),
+      prm_uri: editForm.value.prm_uri || null,
       is_public: editForm.value.is_public,
     }
     const res = await api.put(`/clients/${encodeURIComponent(clientId)}`, body)
@@ -163,6 +167,11 @@ async function deleteClient(clientId) {
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
           </div>
           <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">PRM URI (optional)</label>
+            <input v-model="form.prm_uri" type="url" placeholder="https://example.com/.well-known/oauth-protected-resource"
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm" />
+          </div>
+          <div>
             <label class="block text-sm font-medium text-gray-300 mb-1">Token Endpoint Auth Method</label>
             <select v-model="form.token_endpoint_auth_method"
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
@@ -210,6 +219,11 @@ async function deleteClient(clientId) {
             <label class="block text-sm font-medium text-gray-300 mb-1">Allowed Scopes</label>
             <input v-model="editForm.allowed_scopes"
               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">PRM URI (optional)</label>
+            <input v-model="editForm.prm_uri" type="url" placeholder="https://example.com/.well-known/oauth-protected-resource"
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
           </div>
           <div class="flex items-center gap-2">
             <input id="edit_is_public" v-model="editForm.is_public" type="checkbox" class="rounded border-gray-700 bg-gray-800 text-indigo-600 focus:ring-indigo-500" />
