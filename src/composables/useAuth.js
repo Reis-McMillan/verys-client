@@ -61,6 +61,7 @@ export function useAuth() {
       response_type: 'code',
       client_id: OAUTH2_CONFIG.clientId,
       redirect_uri: OAUTH2_CONFIG.redirectUri,
+      scope: 'openid email profile google microsoft',
       code_challenge: challenge,
       code_challenge_method: 'S256',
       state: oauthState,
